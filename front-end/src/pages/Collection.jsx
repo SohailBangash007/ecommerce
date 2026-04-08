@@ -10,8 +10,9 @@ const Collection = () => {
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
+  const [sortType, setSortType] = useState("relavent");
 
-  console.log("filterProducts",filterProducts)
+  console.log("filterProducts", filterProducts);
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
       setCategory((prev) => prev.filter((item) => item !== e.target.value));
@@ -27,31 +28,48 @@ const Collection = () => {
       setSubCategory((prev) => [...prev, e.target.value]);
     }
   };
-const applyFilter = () => {
-  let productsCopy = products.slice();
-  console.log("filter",productsCopy)
-  if (category.length > 0) {
-    productsCopy = productsCopy.filter(item =>
-      category.includes(item.category)
-    );
-  }
-   console.log("after filter",productsCopy)
-   if (subCategory.length > 0) {
-    productsCopy = productsCopy.filter(item =>
-       subCategory.includes(item.subCategory)
-     );
-   }
+  const applyFilter = () => {
+    let productsCopy = products.slice();
+    console.log("filter", productsCopy);
+    if (category.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        category.includes(item.category),
+      );
+    }
+    console.log("after filter", productsCopy);
+    if (subCategory.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        subCategory.includes(item.subCategory),
+      );
+    }
 
-  setFilterProducts(productsCopy);
-}
+    setFilterProducts(productsCopy);
+  };
 
-   useEffect(() => {
-     setFilterProducts(products);
-   },[]);
+  const sortProduct = () => {
+    let fpCopy = filterProducts.slice();
+
+    switch (sortType) {
+      case "low-high":
+        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price));
+        break;
+
+      case "high-low":
+        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price));
+        break;
+      default:
+        applyFilter();
+        break;
+    }
+  };
 
   useEffect(() => {
     applyFilter();
   }, [category, subCategory]);
+
+  useEffect(() => {
+    sortProduct();
+  }, [sortType]);
 
   return (
     <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
@@ -117,9 +135,9 @@ const applyFilter = () => {
               <input
                 className="w-3"
                 type="checkbox"
-                value={"Top Wear"}
+                value={"Topwear"}
                 onChange={toggleSubCategory}
-              />{"Topwear "}
+              />
               Topwear
             </p>
 
@@ -127,9 +145,9 @@ const applyFilter = () => {
               <input
                 className="w-3"
                 type="checkbox"
-                value={"Bottom Wear"}
+                value={"Bottomwear"}
                 onChange={toggleSubCategory}
-              />{"Bottomwear "}
+              />
               Bottomwear
             </p>
 
@@ -137,9 +155,9 @@ const applyFilter = () => {
               <input
                 className="w-3"
                 type="checkbox"
-                value={"Winter WEAR"}
+                value={"Winterwear"}
                 onChange={toggleSubCategory}
-              />{"Winterwear "}
+              />
               Winterwear
             </p>
           </div>
@@ -152,7 +170,10 @@ const applyFilter = () => {
           <Title text1={"ALL"} text2={"COLLECTION"} />
 
           {/* Product Sort */}
-          <select className="border-2 border-gray-300 text-sm px-2">
+          <select
+            onChange={(e) => setSortType(e.target.value)}
+            className="border-2 border-gray-300 text-sm px-2"
+          >
             <option value="relavent">Sort by: Relavent</option>
             <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: High to Low</option>
